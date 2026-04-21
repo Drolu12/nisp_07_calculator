@@ -1,5 +1,4 @@
- // Simple, safe-ish evaluator for basic arithmetic
-    // Accepts digits, ., + - * / and % (percent handled separately)
+
     const exprEl = document.getElementById('expr');
     const outEl = document.getElementById('out');
     let expr = '';
@@ -11,9 +10,7 @@
     }
 
     function append(val){
-      // avoid multiple leading zeros or multiple dots in a number segment
       if (val === '.') {
-        // find last number segment
         const seg = expr.split(/[\+\-\*\/]/).pop();
         if (seg.includes('.')) return;
         if (seg === '') expr += '0';
@@ -29,7 +26,6 @@
     }
 
     function toggleNeg(){
-      // toggle sign of last number segment
       const parts = expr.split(/([+\-*/])/);
       if (parts.length === 0) return;
       let last = parts.pop();
@@ -45,11 +41,9 @@
     }
 
     function percent(){
-      // convert last number segment to percentage (divide by 100)
       const parts = expr.split(/([+\-*/])/);
       let last = parts.pop();
       if (last === '') return;
-      // remove wrapping parentheses from neg handling
       if (last.startsWith('(-') && last.endsWith(')')) last = '-' + last.slice(2,-1);
       const n = parseFloat(last);
       if (!isFinite(n)) return;
@@ -60,12 +54,9 @@
 
     function evaluateExpression(){
       if (!expr) return;
-      // Replace unicode minus signs and multiplication/division if present
       const safe = expr.replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-').replace(/\s+/g,'');
       try {
-        // Disallow letters etc.
         if (/[^0-9\.\+\-\*\/\(\)\s]/.test(safe)) throw new Error('Invalid');
-        // Use Function to evaluate; this is simple and sufficient for basic calculator
         const val = Function('"use strict"; return (' + safe + ')')();
         if (!isFinite(val)) throw new Error('Math error');
         lastResult = val;
@@ -90,7 +81,6 @@
       if (v) append(v);
     });
 
-    // keyboard support
     window.addEventListener('keydown', (e) => {
       const k = e.key;
       if (/^[0-9]$/.test(k)){ append(k); e.preventDefault(); return; }
@@ -102,5 +92,5 @@
       if (k === '%'){ percent(); e.preventDefault(); return; }
     });
 
-    // initial render
+
     render();
